@@ -1,0 +1,212 @@
+﻿<Window x:Class="AssetManager.Views.GroupSpecificationsView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:convtr="clr-namespace:AssetManager.Converters"  
+        xmlns:behav="clr-namespace:AssetManager.Behaviours"  
+        xmlns:userctrl="clr-namespace:AssetManager.UserControls"               
+        BorderThickness="1"            
+        Icon="/AssetManager;component/Images/update.ico"              
+        WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="SingleBorderWindow"     
+        behav:DialogCloser.DialogResult="{Binding DialogResult}"
+        x:Name="groupspecification"
+        Title="Group Specifications" Height="650" Width="1000">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <convtr:MeasurementUnitConverter x:Key="MeasurementUnitConverter"/>        
+    </Window.Resources>
+       
+        <DockPanel LastChildFill="True">
+
+            <Grid DockPanel.Dock="Top" Height="32">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100*"/>
+                    <ColumnDefinition Width="100*"/>
+                    <ColumnDefinition Width="100"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="28"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Column="0" Text="Asset Group:" Style="{StaticResource textlabel}" />
+                <ComboBox Grid.Column="1" Style="{StaticResource combo}" 
+                          ItemsSource="{Binding AssetGroups}" 
+                          SelectedValuePath="ID"                                   
+                          SelectedValue="{Binding SelectedGroupID}" DisplayMemberPath="Name" />
+            </Grid>
+            <Grid DockPanel.Dock="Top" Height="32">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="100*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="28"/>
+                </Grid.RowDefinitions>
+                    <Button Grid.Column="1" HorizontalAlignment="Left" Style="{StaticResource filterButtonStyle}"
+                            Command="{Binding AddSpecificationCommand}" ToolTip="Add specification to list">
+                        <Button.Content>
+                            <StackPanel Orientation="Horizontal" Height="16">
+                                <Image Source="/AssetManager;component/Images/add.ico"   />
+                                <TextBlock Text="Add Specification" Margin="2,0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button.Content>
+                    </Button>
+            </Grid>
+            
+            <Grid DockPanel.Dock="Bottom" Height="32">
+                <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="120"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" Content="Save" Command="{Binding Save}" Style="{StaticResource filterButtonStyle}" />
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="{Binding IsError, Converter={StaticResource BoolToVis}}" >
+                        <Image Source="/AssetManager;component/Images/warning.ico" Height="16" Width="16" Visibility="{Binding DuplicateSpec, Converter={StaticResource BoolToVis}}" />
+                        <TextBlock Text="{Binding ErrorMsg}" Foreground="Red" Margin="4,0,0,0"/>
+                    </StackPanel>
+                    <Button Grid.Column="2" Content="Close" Command="{Binding Cancel}" Style="{StaticResource filterButtonStyle}" />
+                </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="350*"/>
+                    <ColumnDefinition Width="100"/>
+                </Grid.ColumnDefinitions>
+
+                <userctrl:ExGrid x:Name="specificationlist" Grid.Column="1" ItemsSource="{Binding AssetGroupSpecifications, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                            behav:GridScroll.SelectingItem ="{Binding ScrollToSelectedItem}"          
+                            Style="{StaticResource dgstyle}"  >
+
+                <userctrl:ExGrid.Resources>
+                    <ContextMenu Height="0" Width="0" x:Key="contextmenu" >
+                        <TextBox>No menu</TextBox>
+                    </ContextMenu>
+                </userctrl:ExGrid.Resources>
+
+                <userctrl:ExGrid.Columns>
+                    <DataGridTemplateColumn Width="50"  HeaderStyle="{StaticResource ColumnHeaderStyle}">
+                            <DataGridTemplateColumn.Header>
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <TextBlock Text="ID" FontSize="12" VerticalAlignment="Center" TextAlignment="Center" HorizontalAlignment="Center"  />
+                                </StackPanel>
+                            </DataGridTemplateColumn.Header>
+
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding ID}" Foreground="Gainsboro"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Width="320"  HeaderStyle="{StaticResource ColumnHeaderStyle}">
+                            <DataGridTemplateColumn.Header>
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <TextBlock Text="Specification" FontSize="12" VerticalAlignment="Center" TextAlignment="Center" HorizontalAlignment="Center"  />
+                                </StackPanel>
+                            </DataGridTemplateColumn.Header>
+
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox Width="310" x:Name="spec"  Margin="1,0,1,0" Style="{StaticResource cboStyle}" 
+                                                 ItemsSource="{Binding DataContext.AssetSpecifications, ElementName=groupspecification}"  SelectedValuePath="ID" 
+                                                 SelectedValue="{Binding SpecificationNameID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}" >
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding Name}" Width="150" Margin="2,0,2,0"/>
+                                                    <TextBlock Text="{Binding MeasurementUnitID, Converter={StaticResource MeasurementUnitConverter}}" Width="120"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Width="150"  HeaderStyle="{StaticResource ColumnHeaderStyle}">
+                        <DataGridTemplateColumn.Header>
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <TextBlock Text="Units" FontSize="12" VerticalAlignment="Center" TextAlignment="Center" HorizontalAlignment="Center"  />
+                                </StackPanel>
+                            </DataGridTemplateColumn.Header>
+
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox Width="140"  Margin="1,0,1,0"  DisplayMemberPath="PropertyUnit" 
+                                                 ItemsSource="{Binding DataContext.PropertyUnits, ElementName=groupspecification}"  SelectedValuePath="ID" 
+                                                 SelectedValue="{Binding PropertyUnitID,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
+                                        <ComboBox.Style>
+                                            <Style TargetType="ComboBox">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding MeasurementUnitID}" Value="5">
+                                                        <Setter Property="IsHitTestVisible" Value="False"/>
+                                                        <Setter Property="Visibility" Value="Hidden"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding MeasurementUnitID}" Value="4">
+                                                        <Setter Property="IsHitTestVisible" Value="False"/>
+                                                        <Setter Property="Visibility" Value="Hidden"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ComboBox.Style>
+                                    </ComboBox>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Width="220" HeaderStyle="{StaticResource ColumnHeaderStyle}">
+                        <DataGridTemplateColumn.Header>
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <TextBlock Text="Options" FontSize="12" VerticalAlignment="Center" TextAlignment="Center" HorizontalAlignment="Center"  />
+                                </StackPanel>
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding SpecificationOptions,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Add options, each separated by a comma e.g: Option 1, Option 2, Option 3">
+                                        <TextBox.Style>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="IsTabStop" Value="False"/>
+                                                <Setter Property="Focusable" Value="False"/>
+                                                <Setter Property="IsHitTestVisible" Value="False"/>
+                                                <Setter Property="TextBox.Background" Value="LightGray"/>
+                                                <Setter Property="IsEnabled" Value="False"/>
+                                                <Setter Property="IsManipulationEnabled" Value="False"/>
+                                                <Style.Triggers>
+                                                <DataTrigger Binding="{Binding MeasurementUnitID}" Value="5">
+                                                    <Setter Property="IsTabStop" Value="True"/>
+                                                        <Setter Property="Focusable" Value="True"/>
+                                                        <Setter Property="IsHitTestVisible" Value="True"/>
+                                                        <Setter Property="Background" Value="White"/>
+                                                        <Setter Property="IsEnabled" Value="True"/>
+                                                        <Setter Property="IsManipulationEnabled" Value="True"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBox.Style>
+                                    </TextBox>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="20*" >
+
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Foreground="Red"  HorizontalContentAlignment="Center" Width="30"
+                                                Style="{StaticResource filterButtonStyle}"
+                                                ToolTip="Delete" Visibility="{Binding NoAssociatedRecords, Converter={StaticResource BoolToVis}}"
+                                                                        Command="{Binding DataContext.DeleteSpecificationCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=Window}}"
+                                                                        CommandParameter="{Binding ID}">
+                                        <Button.Content>
+                                            <StackPanel Orientation="Horizontal" Height="16" Width="16" ToolTip="Delete">
+                                                <Image Source="/AssetManager;component/Images/delete.ico"  />
+                                            </StackPanel>
+                                        </Button.Content>
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </userctrl:ExGrid.Columns>
+                </userctrl:ExGrid>
+            </Grid>
+        </DockPanel>
+
+</Window>

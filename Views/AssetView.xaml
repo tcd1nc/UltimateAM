@@ -1,0 +1,810 @@
+﻿<Window  x:Class="AssetManager.Views.AssetView"        
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:AssetManager" 
+        xmlns:convtr="clr-namespace:AssetManager.Converters"  
+        xmlns:userctrl="clr-namespace:AssetManager.UserControls"       
+        x:Name="assetview"  
+        xmlns:behav="clr-namespace:AssetManager.Behaviours"                                              
+        Icon="/AssetManager;component/Images/update.ico"                       
+        behav:DialogCloser.DialogClose="{Binding CloseWindowFlag}"
+        behav:WindowBehavior.WindowClosing="{Binding WindowClosing}"  
+        WindowStyle="SingleBorderWindow"
+        BorderThickness="1"               
+        Title="{Binding LabelTextBlock}" WindowStartupLocation="Manual" Width="980" Height="650" ResizeMode="NoResize" >
+    
+    <Window.Resources>
+        <convtr:StringToImageConverter x:Key="StrToImage"/>
+        <convtr:VisibilityConverterCollapse x:Key="VisibilityConverterCollapse"/>
+        <convtr:CSVSplitter x:Key="CSVSplitter"/>
+        <convtr:BooleanTemplateConverter x:Key="BooleanTemplateConverter"/>
+        <!--<convtr:ByteArrayToImageConverter x:Key="ByteConverter"/>-->
+
+        <Style x:Key="btnSubAssemblyStyle" TargetType="Button">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="Background" Value="#FFF0A538"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        </Style>
+
+        <ControlTemplate x:Key="ErrorTemplate">
+            <DockPanel LastChildFill="True">
+                <Border BorderBrush="Transparent" BorderThickness="0">
+                    <AdornedElementPlaceholder/>
+                </Border>
+            </DockPanel>
+        </ControlTemplate>
+
+        <DataTemplate x:Key="TextTemplate">
+            <TextBox TextAlignment="Left" Width="180" Margin="4,2,2,2" VerticalContentAlignment="Center" VerticalAlignment="Center"  
+                     Style="{StaticResource textbox}" Text="{Binding SpecificationValue, UpdateSourceTrigger=PropertyChanged}" />           
+        </DataTemplate>
+        
+        <DataTemplate x:Key="BooleanTemplate">
+            <CheckBox IsChecked="{Binding SpecificationValue, Converter={StaticResource BooleanTemplateConverter}, UpdateSourceTrigger=PropertyChanged}" 
+                      VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="4,0,0,0"
+                      HorizontalAlignment="Left"/>
+        </DataTemplate>
+        
+        <Style x:Key="optionlist" TargetType="{x:Type ListBoxItem}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                        <ContentPresenter />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <DataTemplate x:Key="OptionTemplate">
+            <Border BorderBrush="Gray" BorderThickness="1" Margin="4,0,2,0">
+                <ListBox ItemsSource="{Binding SpecificationOptions, Converter={StaticResource CSVSplitter}}" Width="180"
+                     SelectedValue="{Binding SpecificationValue, UpdateSourceTrigger=PropertyChanged}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate >
+                            <RadioButton Content="{Binding }"  >
+                                <!-- Binding IsChecked to IsSelected requires no support code -->
+                                <RadioButton.IsChecked>
+                                    <Binding Path="IsSelected" RelativeSource="{RelativeSource AncestorType=ListBoxItem}" Mode="TwoWay" />
+                                </RadioButton.IsChecked>
+                            </RadioButton>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Border>
+        </DataTemplate>
+
+        <SolidColorBrush x:Key="PrimaryBrush" Color="#FF4169AA"/>
+        <SolidColorBrush x:Key="PrimaryFont" Color="White"/>
+        
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+       
+    </Window.Resources>
+
+    <DockPanel LastChildFill="False" Background="#FFFEFEFE" x:Name="ParentGrid" DataContext="{Binding}" >
+        <!--<Button DockPanel.Dock="Top" DataContext="{Binding Asset}" ToolTip="Click to open parent asset" Cursor="Hand" Width="{Binding ActualWidth, ElementName=ParentGrid}"  
+                    Visibility="{Binding ParentAssetID, Converter={StaticResource VisibilityConverterCollapse}}"  
+                    Style="{StaticResource btnSubAssemblyStyle}" Command="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Window}},Path=DataContext.ShowAssembly}" 
+                    CommandParameter="{Binding .}" >
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="This asset is a component of another asset: "/>
+                <TextBlock Text="{Binding DataContext.ParentLabel, ElementName=assetview}"/>
+            </StackPanel>
+        </Button>-->
+
+        <Grid DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" Height="28"  >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="150"/>
+            </Grid.ColumnDefinitions>
+
+            <!--<TextBlock Grid.Column="0" Text="{Binding Asset.ID}" Margin="4,0,0,0" ToolTip="Asset ID" TextAlignment="Left" Foreground="LightGray" />-->
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                 Visibility="{Binding IsError, Converter={StaticResource BoolToVis}}">
+                <Image Source="/AssetManager;component/Images/warning.ico" Height="16" Width="16" />
+                <TextBlock Text="{Binding ErrorMsg}" Foreground="Red" Margin="4,0,0,0" />
+            </StackPanel>
+            <Button Grid.Column="0" Command="{Binding Save}" ToolTip="Save"
+                        CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" 
+                        Content="Save" TextBlock.TextAlignment="Center"
+                        Style="{StaticResource filterButtonStyle}" />
+            <Button Grid.Column="2" Command="{Binding Cancel}" ToolTip="Close"
+                        CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" 
+                        Content="Close" TextBlock.TextAlignment="Center"
+                        Style="{StaticResource filterButtonStyle}" />
+        </Grid>
+
+        <TabControl VerticalAlignment="Stretch" HorizontalAlignment="Left" Margin="8,2,0,2"   >
+            <TabControl.Resources>
+                <Style TargetType="TabItem">
+                    <Setter Property="Height" Value="32"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="TabItem">
+                                <Border Name="Border" BorderThickness="1,1,1,1" BorderBrush="Gainsboro" CornerRadius="2,2,0,0" Margin="2,0">
+                                    <ContentPresenter x:Name="ContentSite" VerticalAlignment="Center" HorizontalAlignment="Center"  ContentSource="Header"  Margin="10,2"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="Border" Property="Background" Value="#FFA5DEFE" />
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="False">
+                                        <Setter TargetName="Border" Property="Background" Value="GhostWhite" />
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Border" Property="Cursor" Value="Hand"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Resources>
+            <TabItem x:Name="Description" Header="Description" >
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="600"/>
+                        <ColumnDefinition Width="350"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid Grid.Column="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="150"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="28"/>
+                            <RowDefinition Height="28"/>
+                            <RowDefinition Height="28"/>
+                            <RowDefinition Height="28"/>
+                            <RowDefinition Height="28"/>
+                            <RowDefinition Height="28"/>
+                            <RowDefinition Height="48"/>
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Area:" Style="{StaticResource textlabel}" />
+                        <ComboBox x:Name="Area" Grid.Column="1" Style="{StaticResource combo}"  
+                                      ItemsSource="{Binding AssetAreas}"  
+                                      DisplayMemberPath="Prefix" 
+                                      SelectedItem="{Binding SelectedArea}"                                        
+                                      SelectedValuePath="ID" 
+                                      SelectedValue="{Binding Asset.AssetAreaID, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"   />
+                        <TextBlock Grid.Row="1" Text="Category:" Style="{StaticResource textlabel}"  />
+                        <ComboBox x:Name="Group" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Style="{StaticResource combo}" ItemsSource="{Binding AssetGroups}"
+                                      SelectedItem="{Binding SelectedGroup, UpdateSourceTrigger=PropertyChanged}"                                            
+                                      SelectedValuePath="ID" 
+                                      SelectedValue="{Binding Asset.AssetGroupID, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate >
+                                    <StackPanel Orientation="Horizontal">
+                                        <!--<TextBlock Text="{Binding AssetGroupIDText}" />
+                                                <TextBlock Text=" : "/>-->
+                                        <TextBlock Text="{Binding Name}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+
+                        <TextBlock Grid.Row="2" Text="Sub Category:" Style="{StaticResource textlabel}" />
+                        <ComboBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Style="{StaticResource combo}" ItemsSource="{Binding AssetTypes}"
+                                          DisplayMemberPath="Name"                                           
+                                          SelectedValuePath="ID"    
+                                  SelectedItem="{Binding SelectedAssetType}"
+                                          SelectedValue="{Binding Asset.AssetTypeID, UpdateSourceTrigger=PropertyChanged, 
+                                          NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
+
+                        <TextBlock Grid.Row="3" Text="Label:" Style="{StaticResource textlabel}" />
+                        <userctrl:LabelControl Grid.Row="3" Grid.Column="1" Margin="2,2,2,2" MaximumIDValue="9999999" Delimiter="-"
+                                               SelectedID="{Binding Asset.LabelID, UpdateSourceTrigger=PropertyChanged}"    
+                                               SelectedArea="{Binding SelectedItem.Prefix, Mode=OneWay, ElementName=Area, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" 
+                                               SelectedGroup="{Binding SelectedItem.AssetGroupIDText, Mode=OneWay, ElementName=Group, UpdateSourceTrigger=PropertyChanged}"/>
+                                                  
+
+                        <TextBlock Grid.Row="4" Text="Status:" Style="{StaticResource textlabel}" />
+                        <ComboBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Style="{StaticResource combo}" ItemsSource="{Binding AssetStatuses}"
+                                  DisplayMemberPath="Name" SelectedValuePath="ID" SelectedValue="{Binding Asset.StatusID, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <TextBlock Grid.Row="5" Text="Next Audit:" Style="{StaticResource textlabel}"/>
+                        <TextBlock Grid.Row="5" Grid.Column="1" Style="{StaticResource textlabel}" Text="{Binding Asset.NextAuditDate, UpdateSourceTrigger=PropertyChanged, StringFormat=d }" />
+
+                        <Button Grid.Row="5" Grid.Column="2" HorizontalAlignment="Left" Style="{StaticResource editoptionsbuttonstyle}" Content="Schedule" Command="{Binding ScheduleAudit}"
+                                        CommandParameter="AuditDates" ToolTip="Schedule audit"/>
+
+                        <TextBlock Grid.Row="6" Text="Description:" Style="{StaticResource textlabel}" />
+                        <TextBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" AcceptsReturn="True" AcceptsTab="True" VerticalContentAlignment="Top" Style="{StaticResource textbox}" Text="{Binding Asset.Name, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <!--<Button Grid.Row="7" Grid.Column="0" VerticalAlignment="Bottom" DataContext="{Binding Asset}" ToolTip="Click to open parent asset" Cursor="Hand" 
+                                Visibility="{Binding ParentAssetID, Converter={StaticResource VisibilityConverterCollapse}}"  
+                            Style="{StaticResource btnSubAssemblyStyle}" Command="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Window}},Path=DataContext.ShowAssembly}" 
+                            CommandParameter="{Binding .}" >
+                            <Button.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding DataContext.ParentLabel, ElementName=assetview}"/>
+                            </StackPanel>
+                                </Button.Content>
+                        </Button>-->   
+
+
+                        <DataGrid Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="3" HeadersVisibility="None"
+                                                  ItemsSource="{Binding AssetGroupSpecificationValues, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                  Margin="2,0,2,0" GridLinesVisibility="None"                                                                                                                               
+                                                  Style="{StaticResource dgstyle}">
+
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn  Width="150" IsReadOnly="True"  >
+                                    <DataGridTemplateColumn.Header>
+                                        <TextBlock Text="Specifications" Background="White" FontSize="12" HorizontalAlignment="Left" TextAlignment="Left"/>
+                                    </DataGridTemplateColumn.Header>
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock TextAlignment="Right" Width="148" Style="{StaticResource textlabel}" Text="{Binding SpecificationName}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn  Width="188" IsReadOnly="False" >
+                                    <DataGridTemplateColumn.CellTemplateSelector>
+                                        <local:SpecificationTemplateSelector
+                                                TextTemplate="{StaticResource TextTemplate}"
+                                                BooleanTemplate="{StaticResource BooleanTemplate}"
+                                                OptionTemplate="{StaticResource OptionTemplate}" />
+                                    </DataGridTemplateColumn.CellTemplateSelector>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn  Width="80" IsReadOnly="True">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock TextAlignment="Left" VerticalAlignment="Center" Text="{Binding SpecificationPropertyName}" Margin="2,0,0,0" >
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding DataTypeID}" Value="5">
+                                                                <Setter Property="Visibility" Value="Hidden"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding DataTypeID}" Value="4">
+                                                                <Setter Property="Visibility" Value="Hidden"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding SpecificationPropertyName}" Value="None">
+                                                                <Setter Property="Visibility" Value="Hidden"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                    <Border Grid.Column="1" VerticalAlignment="Stretch" BorderBrush="Gainsboro" BorderThickness="1" Margin="2,36,8,2" HorizontalAlignment="Stretch"  >
+                        <Grid >
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="350"/>
+                                <RowDefinition Height="72"/>
+                                <RowDefinition Height="32"/>
+                            </Grid.RowDefinitions>
+
+                            <local:ZoomBorder x:Name="border" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,2" ClipToBounds="True" Background="White">
+                                <Image Stretch="None" AllowDrop="False" Focusable="False" VerticalAlignment="Center" HorizontalAlignment="Center" ToolTip="Use mouse wheel to zoom"
+                            Source="{Binding Path=SelectedItem.PhotoFileName, ElementName=PhotoList, Mode=OneWay, Converter={StaticResource StrToImage}}"  />
+                            </local:ZoomBorder>
+
+                            <Border Grid.Row="1" BorderBrush="Gainsboro" BorderThickness="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
+                                <ListBox x:Name="PhotoList" ItemsSource="{Binding Photos, IsAsync=True}" 
+                                  SelectedIndex="{Binding SelectedPhotoIndex}"
+                                         SelectedItem="{Binding SelectedPhoto}"
+                                  ToolTip="Click to view picture" >
+                                    <ListBox.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" />
+                                        </ItemsPanelTemplate>
+                                    </ListBox.ItemsPanel>
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Image Width="48" Height="48" Stretch="Uniform" Source="{Binding PhotoFileName, Converter={StaticResource StrToImage}}" Margin="0,0,4,0" />
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+
+                                </ListBox>
+                            </Border>
+                            <Grid Grid.Row="2"   Margin="0,2" >
+                                <StackPanel Orientation="Horizontal" >
+                                    <Button Style="{StaticResource  filterButtonStyle}" Width="100"  
+                                        ToolTip="Add photo" Margin="4,0" HorizontalAlignment="Left"
+                                        Command="{Binding AddPhotoCommand}" CommandParameter="{Binding}" >
+                                        <Button.Content>
+                                            <StackPanel Orientation="Horizontal" ToolTip="Add photo">
+                                                <Image Source="/AssetManager;component/Images/addphoto.ico" Height="18" Width="18"/>
+                                                <TextBlock Margin="2,0" Text="Add Photo"/>
+                                            </StackPanel>
+                                        </Button.Content>
+                                    </Button>
+
+                                    <Button Style="{StaticResource filterButtonStyle}"  
+                                        ToolTip="Delete photo" Margin="4,0" HorizontalAlignment="Left"
+                                        Command="{Binding DeletePhotoCommand}" CommandParameter="{Binding SelectedItem, ElementName=PhotoList}">
+                                        <Button.Content>
+                                            <StackPanel Orientation="Horizontal" ToolTip="Delete selected photo">
+                                                <Image Source="/AssetManager;component/Images/deletephoto.ico" Height="18" Width="18"/>
+                                                <TextBlock Margin="2,0" Text="Remove Photo"/>
+                                            </StackPanel>
+                                        </Button.Content>
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="Location" Header="Location" >
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition Width="200"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="28"/>
+                        <RowDefinition Height="28"/>
+                        <RowDefinition Height="28"/>
+                        <RowDefinition Height="28"/>
+                        <RowDefinition Height="28"/>
+                        <RowDefinition Height="28"/>
+                        <RowDefinition Height="28"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Customer:" Style="{StaticResource textlabel}" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Style="{StaticResource textlabel}" HorizontalAlignment="Left" Margin="2,0,0,0"
+                                           Text="{Binding Asset.Customer}" />
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Location:" Style="{StaticResource textlabel}" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Style="{StaticResource textlabel}" HorizontalAlignment="Left" Margin="2,0,0,0"
+                                           Text="{Binding Asset.Location}" />
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Date Installed:" Style="{StaticResource textlabel}" />
+                    <DatePicker Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" Style="{StaticResource datepicker}" SelectedDate="{Binding Asset.DateInstalled, StringFormat=dd-MM-yyyy }" IsTabStop="False" />
+                    <Button Grid.Row="2" Grid.Column="2" Style="{StaticResource filterButtonStyle}" HorizontalAlignment="Left" Content="Clear" Command="{Binding ClearSelection}" CommandParameter="DateInstalled" ToolTip="Clear date"/>
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Application:" Style="{StaticResource textlabel}" />
+                    <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Style="{StaticResource textbox}" Text="{Binding Asset.ApplicationType}" />
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Chemicals Used:" Style="{StaticResource textlabel}" />
+                    <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Style="{StaticResource textbox}" Text="{Binding Asset.ChemicalsUsed}" />
+                    <Button Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Visibility="{Binding EnableMovements, Converter={StaticResource BoolToVis}}" Style="{StaticResource filterButtonStyle}"
+                                        ToolTip="Show Asset Movements and Activity Summary" HorizontalAlignment="Left"
+                                        Command="{Binding ShowMovementsCommand}" CommandParameter="{Binding Asset.ID}">
+                        <Button.Content>
+                            <StackPanel Orientation="Horizontal" ToolTip="Show Asset Movements and Activity Summary">
+                                <Image Source="/AssetManager;component/Images/report.ico"   Height="18" Width="18"/>
+                                <TextBlock Margin="2,0" Text="Show Asset Movement and Activity History"/>
+                            </StackPanel>
+                        </Button.Content>
+                    </Button>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Purchase Details" >
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition Width="200"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="28"/>
+                        <RowDefinition Height="28"/>
+                        <RowDefinition Height="28"/>
+                        <RowDefinition Height="28"/>
+                        <RowDefinition Height="28"/>
+                        <RowDefinition Height="28"/>
+                        <RowDefinition Height="28"/>
+                        <RowDefinition Height="28"/>
+                        <RowDefinition Height="48"/>
+                        <RowDefinition Height="28"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Date Purchased:" Style="{StaticResource textlabel}" />
+                    <DatePicker Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" Style="{StaticResource datepicker}" SelectedDate="{Binding Asset.DatePurchased, StringFormat=dd-MM-yyyy }" />
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Purchase Price:" Style="{StaticResource textlabel}" />
+                    <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource textbox}" Text="{Binding Asset.PurchasePrice, StringFormat='c'}" />
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="PO Number:" Style="{StaticResource textlabel}"/>
+                    <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Style="{StaticResource textbox}" Text="{Binding Asset.PONumber}"/>
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Supplier:" Style="{StaticResource textlabel}"/>
+                    <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Style="{StaticResource textbox}" Text="{Binding Asset.SupplierName}" />
+
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Manufacturer:" Style="{StaticResource textlabel}"/>
+                    <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Style="{StaticResource textbox}" Text="{Binding Asset.ManufacturerName}" />
+
+                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Model No:" Style="{StaticResource textlabel}"/>
+                    <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Style="{StaticResource textbox}" Text="{Binding Asset.ModelNo}" />
+
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Serial No:" Style="{StaticResource textlabel}" />
+                    <TextBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Style="{StaticResource textbox}" Text="{Binding Asset.SerialNo}" />
+
+                    <TextBlock Grid.Row="7" Grid.Column="0" Text="Dimensions:" Style="{StaticResource textlabel}" />
+                    <TextBox Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2" Style="{StaticResource textbox}" Text="{Binding Asset.Dimensions}"/>
+
+                    <TextBlock Grid.Row="8" Grid.Column="0" Text="Comments:" Style="{StaticResource textlabel}" />
+                    <TextBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2" AcceptsReturn="True" AcceptsTab="True" VerticalContentAlignment="Top"  Style="{StaticResource textbox}" Text="{Binding Asset.Comments}"/>
+
+                    <TextBlock Grid.Row="9" Grid.Column="0" Text="SAP ID:" Style="{StaticResource textlabel}" />
+                    <TextBox Grid.Row="9" Grid.Column="1" Style="{StaticResource textbox}" Text="{Binding Asset.SAPID}" />
+
+                </Grid>
+            </TabItem>
+            <TabItem Header="Maintenance" >
+                <Grid Margin="2,10,2,0" HorizontalAlignment="Left">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="32"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="32"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Margin="2,0,0,0" Grid.Row="0" Grid.Column="0" Template="{StaticResource CRUDButton}" Tag="Add" Content="Add Maintenance" ToolTip="Add maintenance to list" Command="{Binding AddMaintenanceCommand}" />
+
+                    <DataGrid Grid.Row="1" ItemsSource="{Binding MaintenanceRecords, Mode=TwoWay, IsAsync=True, UpdateSourceTrigger=PropertyChanged}"                                             
+                                      Style="{StaticResource dgstyle}">
+
+                        <DataGrid.ColumnHeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+                                <Setter Property="Foreground" Value="{StaticResource PrimaryFont}"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGrid.ColumnHeaderStyle>
+
+                        <DataGrid.RowStyle>
+                            <Style TargetType="DataGridRow">
+                                <Setter Property="IsEnabled" Value="{Binding DataContext.IsEnabled, ElementName=assetview}"/>
+                            </Style>
+                        </DataGrid.RowStyle>
+
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn  Width="96" IsReadOnly="False" >
+                                <DataGridTemplateColumn.Header>
+                                    <TextBlock Text="Date" ToolTip="Date when Maintenance was carried out"/>
+                                </DataGridTemplateColumn.Header>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <DatePicker HorizontalAlignment="Stretch" Style="{StaticResource datepicker}" SelectedDate="{Binding MaintenanceDate, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTextColumn Width="250*" KeyboardNavigation.IsTabStop="False" 
+                                            Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
+                                <DataGridTextColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="Description" ToolTip="Brief description of work done"  />
+                                    </DataTemplate>
+                                </DataGridTextColumn.HeaderTemplate>
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Padding" Value="2,2,0,0" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+
+                                <DataGridTextColumn.EditingElementStyle>
+                                    <Style TargetType="{x:Type TextBox}">
+                                        <Setter Property="Padding" Value="2,2,0,0" />
+                                        <!--<Setter Property="ContextMenu" Value="{StaticResource contextmenu}"/>-->
+                                    </Style>
+                                </DataGridTextColumn.EditingElementStyle>
+
+                                <DataGridTextColumn.CellStyle>
+                                    <Style TargetType="DataGridCell">
+                                        <Setter Property="Background" Value="White"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Background" Value="Blue"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGridTextColumn.CellStyle>
+
+                            </DataGridTextColumn>
+
+                            <DataGridTemplateColumn  Width="80" IsReadOnly="False">
+                                <DataGridTemplateColumn.Header>
+                                    <TextBlock Text="Cost" ToolTip="Total cost"/>
+                                </DataGridTemplateColumn.Header>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox TextAlignment="Right" Text="{Binding Cost, UpdateSourceTrigger=PropertyChanged, StringFormat=c}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn  Width="100" IsReadOnly="False">
+                                <DataGridTemplateColumn.Header>
+                                    <TextBlock Text="Maintained By" ToolTip="Name of company or person"/>
+                                </DataGridTemplateColumn.Header>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox TextAlignment="Left" Text="{Binding MaintainedBy, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Width="32" >
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button ToolTip="Delete maintenance from list" 
+                                                            Command="{Binding DataContext.DeleteMaintenanceCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                                                            CommandParameter="{Binding }">
+                                            <Button.Content>
+                                                <StackPanel Orientation="Horizontal" Height="16" Width="16" ToolTip="Delete maintenance record from list">
+                                                    <Image Source="/AssetManager;component/Images/delete.ico"  />
+                                                </StackPanel>
+                                            </Button.Content>
+                                        </Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Button Grid.Row="2" Margin="2,0,0,0" Template="{StaticResource CRUDButton}" Tag="Add" Content="Add Scheduled Maintenance" ToolTip="Add maintenance to list" Command="{Binding AddScheduledMaintenanceCommand}" />
+                    <DataGrid Grid.Row="3" ItemsSource="{Binding ScheduledMaintenance, Mode=TwoWay, IsAsync=True, UpdateSourceTrigger=PropertyChanged}"                                             
+                                          Style="{StaticResource dgstyle}" >
+
+                        <DataGrid.ColumnHeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+                                <Setter Property="Foreground" Value="{StaticResource PrimaryFont}"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGrid.ColumnHeaderStyle>
+
+                        <DataGrid.RowStyle>
+                            <Style TargetType="DataGridRow">
+                                <Setter Property="IsEnabled" Value="{Binding DataContext.IsEnabled, ElementName=assetview}"/>
+                            </Style>
+                        </DataGrid.RowStyle>
+
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn  Width="96" IsReadOnly="False" >
+                                <DataGridTemplateColumn.Header>
+                                    <TextBlock Text="Date" ToolTip="Date when maintenance is scheduled"/>
+                                </DataGridTemplateColumn.Header>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <DatePicker Style="{StaticResource datepicker}" HorizontalAlignment="Stretch" SelectedDate="{Binding ScheduledMaintenanceDate, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTextColumn Width="250*" KeyboardNavigation.IsTabStop="False" 
+                                            Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
+                                <DataGridTextColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="Description" ToolTip="Type of maintenance to be done"  />
+                                    </DataTemplate>
+                                </DataGridTextColumn.HeaderTemplate>
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Padding" Value="2,2,0,0" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+
+                                <DataGridTextColumn.EditingElementStyle>
+                                    <Style TargetType="{x:Type TextBox}">
+                                        <Setter Property="Padding" Value="2,2,0,0" />
+                                        <!--<Setter Property="ContextMenu" Value="{StaticResource contextmenu}"/>-->
+                                    </Style>
+                                </DataGridTextColumn.EditingElementStyle>
+
+                                <DataGridTextColumn.CellStyle>
+                                    <Style TargetType="DataGridCell">
+                                        <Setter Property="Background" Value="White"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Background" Value="Blue"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGridTextColumn.CellStyle>
+
+                            </DataGridTextColumn>
+
+                            <DataGridTemplateColumn  Width="80" IsReadOnly="False">
+                                <DataGridTemplateColumn.Header>
+                                    <TextBlock Text="Completed" ToolTip="Check this when maintenance has been completed"/>
+                                </DataGridTemplateColumn.Header>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox HorizontalAlignment="Center" IsChecked="{Binding Completed, UpdateSourceTrigger=PropertyChanged}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Width="32" >
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button ToolTip="Delete scheduled maintenance from list" 
+                                                    Command="{Binding DataContext.DeleteScheduledMaintenanceCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                                                    CommandParameter="{Binding }">
+                                            <Button.Content>
+                                                <StackPanel Orientation="Horizontal" Height="16" Width="16" ToolTip="Delete scheduled maintenance record from list">
+                                                    <Image Source="/AssetManager;component/Images/delete.ico"  />
+                                                </StackPanel>
+                                            </Button.Content>
+                                        </Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Consumables"  >
+                <Grid Margin="2,10,2,0"   HorizontalAlignment="Left">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="32"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal" >
+                        <Button Margin="2,0,10,0" Template="{StaticResource CRUDButton}" Tag="Add" Content="Add Consumable" ToolTip="Add" Command="{Binding AddConsumableCommand}" />
+                        <!--<CheckBox HorizontalAlignment="Right" VerticalContentAlignment="Center"  IsChecked="{Binding ShowUsedConsumables}">
+                            <TextBlock Text="Show Used"/>
+                        </CheckBox>-->
+                    </StackPanel>
+                    <DataGrid Grid.Row="1" ItemsSource="{Binding Consumables, Mode=TwoWay, IsAsync=True, UpdateSourceTrigger=PropertyChanged}"                                             
+                                          Style="{StaticResource dgstyle}" >
+
+                        <DataGrid.ColumnHeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+                                <Setter Property="Foreground" Value="{StaticResource PrimaryFont}"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGrid.ColumnHeaderStyle>
+                        <!--<DataGrid.RowStyle>
+                                        <Style TargetType="DataGridRow">
+                                            <Setter Property="IsEnabled" Value="{Binding DataContext.IsEnabled, ElementName=assetview}"/>
+                                        </Style>
+                                    </DataGrid.RowStyle>-->
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn  Width="96" IsReadOnly="False" >
+                                <DataGridTemplateColumn.Header>
+                                    <TextBlock Text="Purchased" />
+                                </DataGridTemplateColumn.Header>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <DatePicker Style="{StaticResource datepicker}" HorizontalAlignment="Stretch" SelectedDate="{Binding DatePurchased, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTextColumn Width="150*" KeyboardNavigation.IsTabStop="False" 
+                                                    Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
+                                <DataGridTextColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="Description"  />
+                                    </DataTemplate>
+                                </DataGridTextColumn.HeaderTemplate>
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Padding" Value="2,2,0,0" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+
+                                <DataGridTextColumn.EditingElementStyle>
+                                    <Style TargetType="{x:Type TextBox}">
+                                        <Setter Property="Padding" Value="2,2,0,0" />
+                                        <!--<Setter Property="ContextMenu" Value="{StaticResource contextmenu}"/>-->
+                                    </Style>
+                                </DataGridTextColumn.EditingElementStyle>
+
+                                <DataGridTextColumn.CellStyle>
+                                    <Style TargetType="DataGridCell">
+                                        <Setter Property="Background" Value="White"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Background" Value="Blue"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGridTextColumn.CellStyle>
+                            </DataGridTextColumn>
+
+                            <DataGridTextColumn Width="120" KeyboardNavigation.IsTabStop="False" 
+                                            Binding="{Binding SupplierName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
+                                <DataGridTextColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="Supplier"  />
+                                    </DataTemplate>
+                                </DataGridTextColumn.HeaderTemplate>
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Padding" Value="2,2,0,0" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+
+                                <DataGridTextColumn.EditingElementStyle>
+                                    <Style TargetType="{x:Type TextBox}">
+                                        <Setter Property="Padding" Value="2,2,0,0" />
+                                        <!--<Setter Property="ContextMenu" Value="{StaticResource contextmenu}"/>-->
+                                    </Style>
+                                </DataGridTextColumn.EditingElementStyle>
+
+                                <DataGridTextColumn.CellStyle>
+                                    <Style TargetType="DataGridCell">
+                                        <Setter Property="Background" Value="White"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Background" Value="Blue"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGridTextColumn.CellStyle>
+                            </DataGridTextColumn>
+
+                            <DataGridTemplateColumn  Width="70" IsReadOnly="False">
+                                <DataGridTemplateColumn.Header>
+                                    <TextBlock Text="Quantity" ToolTip="Quantity"/>
+                                </DataGridTemplateColumn.Header>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox TextAlignment="Right" HorizontalAlignment="Stretch" Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged, StringFormat=N0}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn  Width="80" IsReadOnly="False">
+                                <DataGridTemplateColumn.Header>
+                                    <TextBlock Text="Cost" ToolTip="Total Cost"/>
+                                </DataGridTemplateColumn.Header>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox TextAlignment="Right" HorizontalAlignment="Stretch" Text="{Binding Cost, UpdateSourceTrigger=PropertyChanged, StringFormat=c}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <!--<DataGridTemplateColumn  Width="40" IsReadOnly="False">
+                                <DataGridTemplateColumn.Header>
+                                    <TextBlock Text="Used" ToolTip="Checked if item has been used"/>
+                                </DataGridTemplateColumn.Header>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding Used, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>-->
+
+                            <DataGridTemplateColumn Width="32">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button ToolTip="Delete consumable from list" 
+                                                    Command="{Binding DataContext.DeleteConsumableCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                                                    CommandParameter="{Binding}">
+                                            <Button.Content>
+                                                <Image Height="16" Width="16" ToolTip="Delete consumable from list" Source="/AssetManager;component/Images/delete.ico"  />
+                                            </Button.Content>
+                                        </Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+    </DockPanel>
+</Window>

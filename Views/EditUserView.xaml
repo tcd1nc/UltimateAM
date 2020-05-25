@@ -1,0 +1,51 @@
+﻿<Window x:Class="AssetManager.Views.EditUserView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AssetManager.Views"
+        mc:Ignorable="d"
+        xmlns:loc="clr-namespace:AssetManager"
+        xmlns:behav="clr-namespace:AssetManager.Behaviours" 
+        WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="SingleBorderWindow"
+        behav:DialogCloser.DialogClose="{Binding CloseWindowFlag}"
+        behav:DialogCloser.DialogResult="{Binding DialogResult}"
+        Title="Users" Height="400" Width="600">
+    <Grid>
+        <DockPanel LastChildFill="True">
+            <Grid DockPanel.Dock="Top" Height="2"/>
+
+            <Grid DockPanel.Dock="Bottom" Height="32">
+                <Button Content="Cancel" Command="{Binding Cancel}" Margin="10,0,0,0" Width="50" Style="{StaticResource filterButtonStyle}" HorizontalAlignment="Left"/>
+                <Button Content="Add New" Command="{Binding AddNew}" Margin="10,0,0,0" Width="50" Style="{StaticResource filterButtonStyle}" HorizontalAlignment="Center"/>
+                <Button Content="Save" Command="{Binding SaveAndClose}" Width="50" Style="{StaticResource filterButtonStyle}" HorizontalAlignment="Right"/>
+            </Grid>
+            <Grid VerticalAlignment="Top" Margin="10,20,10,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="400"/>
+
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="18"/>
+                    <RowDefinition Height="200"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="Users"  HorizontalAlignment="Left" TextAlignment="Left" Style="{StaticResource textlabel}" />
+                <ListBox x:Name="lstusers" Margin="2,2,2,2" Width="300" Grid.Row="1" Grid.Column="1"  HorizontalAlignment="Left" ItemsSource="{Binding Users}" 
+                         SelectedItem="{Binding User}" 
+                         behav:LBScrollHelper.ScrollToSelectedItem="{Binding ScrollToSelectedItem}"
+                         behav:LBScrollHelper.ScrollToLastItem="{Binding ScrollToLastItem}"
+                         IsEnabled="{Binding UserListEnabled}"           
+                         IsSynchronizedWithCurrentItem="True" DisplayMemberPath="UserName" >
+
+                </ListBox>
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="User Name:" HorizontalAlignment="Right" TextAlignment="Right" Style="{StaticResource textlabel}" Height="18" Width="120" />
+                <TextBox Grid.Row="2" Grid.Column="1" Width="300" Text="{Binding User.UserName,UpdateSourceTrigger=PropertyChanged, 
+                    NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True, ValidatesOnDataErrors=True}" Style="{StaticResource RequiredName}"  />
+
+            </Grid>
+        </DockPanel>
+    </Grid>
+</Window>

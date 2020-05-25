@@ -1,0 +1,19 @@
+﻿<Window x:Class="AssetManager.Views.ScheduledMaintenanceView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AssetManager.Views"
+        mc:Ignorable="d"
+        Icon="/AssetManager;component/Images/update.ico"
+        xmlns:loc="clr-namespace:AssetManager"
+        xmlns:behav="clr-namespace:AssetManager.Behaviours" 
+        WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="SingleBorderWindow"
+        behav:DialogCloser.DialogClose="{Binding CloseWindowFlag}"
+        behav:DialogCloser.DialogResult="{Binding DialogResult}"
+        x:Name="parent"
+        Title="Scheduled Maintenance" Height="300" Width="300">
+    <Grid>
+        
+    </Grid>
+</Window>

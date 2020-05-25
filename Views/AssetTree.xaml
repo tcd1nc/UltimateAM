@@ -1,0 +1,163 @@
+﻿<Window x:Class="AssetManager.AssetTree"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:AssetManager" 
+        
+        Title="Asset Tree" Height="800" Width="800" WindowStartupLocation="CenterScreen" WindowState="Maximized" Loaded="Window_Loaded">
+    
+    <Window.Resources>
+        <CollectionViewSource x:Key="AssetsCollectionViewSource"/>
+       
+        <local:StringToImageConverter x:Key="stringtoimageconverter"/>
+        <!-- is this template needed?-->
+        <DataTemplate x:Key="dt1">
+            <TextBlock Text="{Binding Path=Label}"/>
+        </DataTemplate>
+
+        <Style x:Key="navbuttonStyle" TargetType="Button">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="Width" Value="90"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="4,0,4,0"/>
+        </Style>
+
+
+
+        <local:TreeViewLineConverter x:Key="LineConverter"/>
+
+        <!-- Toggle Button -->
+        <Style x:Key="ExpandCollapseToggleStyle" TargetType="ToggleButton">
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Grid Width="15" Height="13" SnapsToDevicePixels="True">
+                            <Rectangle Width="9" Height="9" Stroke="#919191" SnapsToDevicePixels="true">
+                                <Rectangle.Fill>
+                                    <LinearGradientBrush EndPoint="0.5,2" StartPoint="0.5,0">
+                                        <GradientStop Color="White" Offset="0"/>
+                                        <GradientStop Color="Silver" Offset="0.5"/>
+                                        <GradientStop Color="LightGray" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                            <Rectangle x:Name="ExpandPath" Width="1" Height="5" Stroke="Black" SnapsToDevicePixels="true"/>
+                            <Rectangle Width="5" Height="1" Stroke="Black" SnapsToDevicePixels="true"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="Visibility"  TargetName="ExpandPath" Value="Collapsed"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
+    
+        
+    </Window.Resources> 
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+             
+        <DockPanel Grid.Row="0" VerticalAlignment="Top">
+            
+        </DockPanel>
+        
+        <TreeView Name="treeview1" Grid.Row="1" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.IsVirtualizing="True"  >
+            <TreeView.Resources>
+                <!-- is this template needed?-->
+                <HierarchicalDataTemplate DataType="{x:Type local:TreeCustomers}" ItemsSource="{Binding Tree}" >
+                    <TextBlock Text="{Binding Name}" FontSize="11" />
+                </HierarchicalDataTemplate>
+
+                <HierarchicalDataTemplate DataType="{x:Type local:TreeCustomer}" ItemsSource="{Binding AssetCollection}"   >                              
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="200"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40"/>
+                        </Grid.RowDefinitions>
+                       
+                        <Border Grid.Column="0" Grid.Row="0" Height="32" Width="32" BorderBrush="Black" BorderThickness="1" CornerRadius="2"  >
+                            <Image x:Name="iconFile" Margin="1,1,1,1" Source="{Binding IconFile, Converter={StaticResource stringtoimageconverter}}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="2,1,1,1" FontSize="10" VerticalAlignment="Center" />                                                                           
+                    </Grid>                    
+                </HierarchicalDataTemplate>
+
+                <HierarchicalDataTemplate  DataType="{x:Type local:AssetNode}" ItemsSource="{Binding Children}" >
+                    
+                    <Border BorderBrush="Blue" BorderThickness="1" CornerRadius="2" Margin="2,2,2,2" >
+                        <Grid VerticalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="40"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition x:Name="itemheight" Height="40"/>                                                         
+                            </Grid.RowDefinitions>
+                            <StackPanel Margin="2,2,2,2" Orientation="Vertical" Grid.Column="0" Grid.Row="0" VerticalAlignment="Top" >                                                                            
+                                <TextBlock Text="{Binding Label}" FontSize="11" Foreground="Blue" />
+                                <StackPanel  Orientation="Horizontal" >
+                                    <TextBlock Text="{Binding ID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="2,0" Foreground="Black" FontSize="11" />
+                                    <TextBlock Text="{Binding Category}" Margin="0,0,2,0" Foreground="Black" FontSize="11" />
+                                    <TextBlock Text=":" Foreground="Black"/>
+                                    <TextBlock Text="{Binding Description}" Margin="2,0" Foreground="Black" FontSize="11" />
+                                </StackPanel>
+                            </StackPanel>
+                            <Border Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"  BorderBrush="Black" BorderThickness="1" CornerRadius="2" >
+                                <Image x:Name="imgAsset"  Source="{Binding ImageFile, Converter={StaticResource stringtoimageconverter}}"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </HierarchicalDataTemplate>
+            </TreeView.Resources>
+
+            <TreeView.ItemContainerStyle >
+                <Style TargetType="{x:Type TreeViewItem}">
+                    <EventSetter Event="MouseDoubleClick" Handler="test"/>
+                    <Setter Property="Tag" Value="{Binding ID}"/>
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+
+
+                    
+
+
+
+                </Style>
+              
+            </TreeView.ItemContainerStyle>
+            
+            
+        </TreeView>
+
+        <DockPanel Grid.Row="2" >
+            <Grid DockPanel.Dock="Bottom" VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="150"/>
+                </Grid.ColumnDefinitions>
+                <Button Content="test" Name="btntest" Grid.Column="1" Style="{StaticResource navbuttonStyle}" Click="btntest_Click" />
+                <Button Content="Cancel" Name="btnCancel" Grid.Column="2" Style="{StaticResource navbuttonStyle}" Click="btnCancel_Click" />
+            </Grid>
+
+        </DockPanel>
+
+    </Grid>
+
+</Window>

@@ -1,0 +1,96 @@
+﻿<Window x:Class="AssetManager.Views.ScheduledActivityAlerterView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        BorderThickness="1"
+        mc:Ignorable="d"
+        Icon="/AssetManager;component/Images/update.ico"
+        xmlns:behav="clr-namespace:AssetManager.Behaviours" 
+        WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="SingleBorderWindow"
+        behav:DialogCloser.DialogClose="{Binding CloseWindowFlag}"
+        x:Name="parent"
+        Title="Scheduled Activities" Height="550" Width="800">
+    <Grid>
+        <DockPanel LastChildFill="True">
+            <Grid DockPanel.Dock="Top" Height="2"/>
+
+            <Grid DockPanel.Dock="Bottom" Height="32">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="2" Content="Close" Command="{Binding Close}" Margin="0,0,10,0" Width="50" Style="{StaticResource filterButtonStyle}" HorizontalAlignment="Right"/>
+                </Grid>
+            </Grid>
+            <Grid VerticalAlignment="Top" Margin="10,20,10,0" HorizontalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="660"/>
+                    <ColumnDefinition Width="50"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="18"/>
+                    <RowDefinition Height="180"/>
+                    <RowDefinition Height="8"/>
+                    <RowDefinition Height="18"/>
+                    <RowDefinition Height="180"/>                    
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="Scheduled Audits"  HorizontalAlignment="Left" TextAlignment="Left" Style="{StaticResource textlabel}" />
+                <ListBox x:Name="lstaudits" Margin="2,2,2,2"  Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Audits}" 
+                         BorderThickness="1"
+                         behav:LBScrollHelper.ScrollToSelectedItem="{Binding ScrollToSelectedItem}"
+                           
+                         IsSynchronizedWithCurrentItem="True"  >
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding AssetID}" Width="40" Foreground="Gainsboro" TextAlignment="Left" Margin="2,0,0,0"/>
+                                <TextBlock Text="{Binding Label}" Width="120" TextAlignment="Left" Margin="2,0,0,0"/>
+                                <TextBlock Text="{Binding ScheduledMaintenanceDate, StringFormat=d}" Width="120" TextAlignment="Left" Margin="2,0,0,0"/>
+                                <TextBlock Text="{Binding CustomerName}" Width="200" TextAlignment="Left" Margin="2,0,0,0"/>
+                                <Button Margin="2,0,0,0" Style="{StaticResource filterButtonStyle}" ToolTip="Delete Audit" Width="30" HorizontalAlignment="Right"
+                                                    Command="{Binding DataContext.DeleteAudit, ElementName=parent}" CommandParameter="{Binding}">
+                                    <Button.Content>
+                                        <StackPanel Orientation="Horizontal" ToolTip="Delete Audit">
+                                            <Image Source="/AssetManager;component/Images/delete.ico" Height="16" Width="16"  />
+                                        </StackPanel>
+                                    </Button.Content>
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="Scheduled Maintenance"  HorizontalAlignment="Left" TextAlignment="Left" Style="{StaticResource textlabel}" />
+                <ListBox x:Name="lstmaintenance" Margin="2,2,2,2" Grid.Row="4" Grid.Column="1"   ItemsSource="{Binding Maintenance}" 
+                         BorderThickness="1"
+                         behav:LBScrollHelper.ScrollToSelectedItem="{Binding ScrollToSelectedItem}"
+                           
+                         IsSynchronizedWithCurrentItem="True"  >
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding AssetID}" Width="40" Foreground="Gainsboro" TextAlignment="Left" Margin="2,0,0,0"/>
+                                <TextBlock Text="{Binding Label}" Width="120" TextAlignment="Left" Margin="2,0,0,0"/>
+                                <TextBlock Text="{Binding ScheduledMaintenanceDate, StringFormat=d}" Width="120" TextAlignment="Left" Margin="2,0,0,0"/>
+                                <TextBlock Text="{Binding CustomerName}" Width="200" TextAlignment="Left" Margin="2,0,0,0"/>
+                                <Button Margin="2,0,0,0" Style="{StaticResource filterButtonStyle}" ToolTip="Delete Scheduled Maintenance" Width="30" HorizontalAlignment="Right"
+                                                    Command="{Binding DataContext.DeleteMaintenance, ElementName=parent}" CommandParameter="{Binding}">
+                                    <Button.Content>
+                                        <StackPanel Orientation="Horizontal" ToolTip="Delete Scheduled Maintenance">
+                                            <Image Source="/AssetManager;component/Images/delete.ico" Height="16" Width="16"  />
+                                        </StackPanel>
+                                    </Button.Content>
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+        </DockPanel>
+    </Grid>
+</Window>

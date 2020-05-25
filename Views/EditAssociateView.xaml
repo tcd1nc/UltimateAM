@@ -1,0 +1,54 @@
+﻿<Window x:Class="AssetManager.Views.EditAssociateView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AssetManager.Views"
+        mc:Ignorable="d"
+        x:Name="parent"
+        Icon="/AssetManager;component/Images/update.ico"
+        xmlns:loc="clr-namespace:AssetManager"
+        xmlns:behav="clr-namespace:AssetManager.Behaviours" 
+        WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="SingleBorderWindow"
+        behav:DialogCloser.DialogClose="{Binding CloseWindowFlag}"
+        Title="Associates" Height="500" Width="600">
+    <Grid>
+        <DockPanel LastChildFill="True">
+            <Grid DockPanel.Dock="Top" Height="2"/>
+
+            <Grid DockPanel.Dock="Bottom" Height="32">
+                <Button Content="Cancel" Command="{Binding Cancel}" Margin="10,0,0,0" Width="50" Style="{StaticResource filterButtonStyle}" HorizontalAlignment="Left"/>
+                <Button Content="Add New" Command="{Binding AddNew}" Margin="10,0,0,0" Width="50" Style="{StaticResource filterButtonStyle}" HorizontalAlignment="Center"/>
+                <Button Content="Save" Command="{Binding SaveAndClose}" Width="50" Style="{StaticResource filterButtonStyle}" HorizontalAlignment="Right"/>
+            </Grid>
+            <Grid VerticalAlignment="Top" Margin="10,20,10,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="400"/>
+
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="200"/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <ListBox x:Name="lstassociates" Margin="2,2,2,2" Width="300" Grid.Column="1"  HorizontalAlignment="Left" ItemsSource="{Binding Associates}" 
+                         SelectedItem="{Binding Associate}" 
+                         behav:LBScrollHelper.ScrollToSelectedItem="{Binding ScrollToSelectedItem}"
+                         behav:LBScrollHelper.ScrollToLastItem="{Binding ScrollToLastItem}"
+                         IsEnabled="{Binding AssociateListEnabled}"           
+                         IsSynchronizedWithCurrentItem="True" DisplayMemberPath="AssociateName" >
+                </ListBox>
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Associate Name:" HorizontalAlignment="Right" TextAlignment="Right" Style="{StaticResource textlabel}" Height="18" Width="120" />
+                <TextBox Grid.Row="1" Grid.Column="1" Width="300" Text="{Binding Associate.AssociateName,UpdateSourceTrigger=PropertyChanged, 
+                    NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True, ValidatesOnDataErrors=True}" Style="{StaticResource RequiredName}"  />
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Associate Login Name:" HorizontalAlignment="Right" TextAlignment="Right" Style="{StaticResource textlabel}" Height="18" Width="120" />
+                <TextBox Grid.Row="2" Grid.Column="1" Width="300" Text="{Binding Associate.LoginName}" Style="{StaticResource textbox}"  />
+                <CheckBox  Grid.Row="3" Grid.Column="1" Content="Is Manager?" IsChecked="{Binding Associate.Manager}"/>
+
+            </Grid>
+
+        </DockPanel>
+    </Grid>
+</Window>

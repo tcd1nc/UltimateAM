@@ -1,0 +1,209 @@
+﻿<Window x:Class="AssetManager.Views.EditCustomersView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        BorderThickness="1"               
+        mc:Ignorable="d" 
+        Icon="/AssetManager;component/Images/update.ico"
+        xmlns:behav="clr-namespace:AssetManager.Behaviours"
+        WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="SingleBorderWindow"
+        behav:DialogCloser.DialogResult="{Binding DialogResult}"
+        x:Name="parent"
+        Title="Customers" Width="1000" Height="600"  >
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <!--<convtr:StringToImageConverter x:Key="StringToImageConverter"/>-->
+      
+    </Window.Resources>
+    
+    <DockPanel LastChildFill="True">
+            <Grid DockPanel.Dock="Top" Height="32">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="80*"/>
+                    <ColumnDefinition Width="80*"/>
+                    <ColumnDefinition Width="50"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="28"/>
+                </Grid.RowDefinitions>
+                <Button Grid.Column="1" Template="{StaticResource CRUDButton}" Tag="Add" Content="Add" ToolTip="Add" Command="{Binding AddNew}" />
+                <Button Grid.Column="2" Template="{StaticResource CRUDButton}" Tag="Delete" Content="Delete" ToolTip="Delete" Command="{Binding Delete}" />
+            </Grid>
+            <Grid DockPanel.Dock="Bottom" Height="32">
+                <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="120"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" Content="Save" Command="{Binding Save}" Style="{StaticResource filterButtonStyle}" />
+                    <Button Grid.Column="2" Content="Close" Command="{Binding Cancel}" Style="{StaticResource filterButtonStyle}" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                 Visibility="{Binding IsError, Converter={StaticResource BoolToVis}}">
+                    <Image Source="/AssetManager;component/Images/warning.ico" Height="16" Width="16" />
+                    <TextBlock Text="{Binding ErrorMsg}" Foreground="Red" Margin="4,0,0,0" />
+                </StackPanel>
+            </Grid>
+
+            <Grid >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="350*"/>
+                    <ColumnDefinition Width="50"/>
+                </Grid.ColumnDefinitions>
+                <DataGrid Grid.Column="1" 
+                      ItemsSource="{Binding Customers, IsAsync=True, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"        					                                                                                                                                                                                                                                                    						                                                     
+                      behav:GridScroll.SelectingItem ="{Binding ScrollToSelectedItem}"  
+                      Style="{StaticResource dgstyle}">
+
+                    <DataGrid.Resources>
+                        <ContextMenu Height="0" Width="0" x:Key="contextmenu" >
+                            <TextBox>No menu</TextBox>
+                        </ContextMenu>
+                    </DataGrid.Resources>
+
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Width="40" IsReadOnly="True" KeyboardNavigation.IsTabStop="False" HeaderStyle="{StaticResource ColumnHeaderStyle}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox IsEnabled="{Binding IsDeletable}" IsChecked="{Binding Selected, UpdateSourceTrigger=PropertyChanged}" 
+                                              HorizontalContentAlignment="Center"  HorizontalAlignment="Center" Width="20"
+                                              Style="{StaticResource chkbox}"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTextColumn Width="280" KeyboardNavigation.IsTabStop="False" HeaderStyle="{StaticResource ColumnHeaderStyle}"
+                                Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
+                            <DataGridTextColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="Name"  />
+                                </DataTemplate>
+                            </DataGridTextColumn.HeaderTemplate>
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource dgtextlabel}">
+                                    <Setter Property="Padding" Value="2,2,0,0" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+
+                            <DataGridTextColumn.EditingElementStyle>
+                                <Style TargetType="{x:Type TextBox}">
+                                    <Setter Property="Padding" Value="2,2,0,0" />
+                                    <Setter Property="ContextMenu" Value="{StaticResource contextmenu}"/>
+                                </Style>
+                            </DataGridTextColumn.EditingElementStyle>
+
+                            <DataGridTextColumn.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="Background" Value="White"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Background" Value="Blue"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Width="150" KeyboardNavigation.IsTabStop="False" HeaderStyle="{StaticResource ColumnHeaderStyle}"
+                                Binding="{Binding Location, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
+                            <DataGridTextColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="Location"  />
+                                </DataTemplate>
+                            </DataGridTextColumn.HeaderTemplate>
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource dgtextlabel}">
+                                    <Setter Property="Padding" Value="2,2,0,0" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+
+                            <DataGridTextColumn.EditingElementStyle>
+                                <Style TargetType="{x:Type TextBox}">
+                                    <Setter Property="Padding" Value="2,2,0,0" />
+                                    <Setter Property="ContextMenu" Value="{StaticResource contextmenu}"/>
+                                </Style>
+                            </DataGridTextColumn.EditingElementStyle>
+
+                            <DataGridTextColumn.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="Background" Value="White"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Background" Value="Blue"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
+
+                        <DataGridTemplateColumn Width="120" HeaderStyle="{StaticResource ColumnHeaderStyle}">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="Country"/>
+                            </DataGridTemplateColumn.Header>
+
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox Style="{StaticResource combo}" 
+                                          ItemsSource="{Binding DataContext.Countries, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"  
+                                          DisplayMemberPath="Name" SelectedValuePath="ID"                         
+                                          SelectedValue="{Binding CountryID, UpdateSourceTrigger=PropertyChanged}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Width="150" HeaderStyle="{StaticResource ColumnHeaderStyle}">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="Corporation"/>
+                            </DataGridTemplateColumn.Header>
+
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox Style="{StaticResource combo}" 
+                                        ItemsSource="{Binding DataContext.Corporations,RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
+                                        DisplayMemberPath="Name" 
+                                        SelectedValuePath="ID"                         
+                                        SelectedValue="{Binding CorporationID, UpdateSourceTrigger=PropertyChanged}"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTextColumn Width="90" KeyboardNavigation.IsTabStop="False" HeaderStyle="{StaticResource ColumnHeaderStyle}"
+                                Binding="{Binding CustomerNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
+                            <DataGridTextColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="SAP ID"  />
+                                </DataTemplate>
+                            </DataGridTextColumn.HeaderTemplate>
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource dgtextlabel}">
+                                    <Setter Property="Padding" Value="2,2,0,0" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+
+                            <DataGridTextColumn.EditingElementStyle>
+                                <Style TargetType="{x:Type TextBox}">
+                                    <Setter Property="Padding" Value="2,2,0,0" />
+                                    <Setter Property="ContextMenu" Value="{StaticResource contextmenu}"/>
+                                </Style>
+                            </DataGridTextColumn.EditingElementStyle>
+
+                            <DataGridTextColumn.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="Background" Value="White"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Background" Value="Blue"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
+
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </DockPanel>
+
+</Window>

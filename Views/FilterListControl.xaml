@@ -1,0 +1,103 @@
+﻿<UserControl x:Class="EquipmentManager.FilterListControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:local="clr-namespace:EquipmentManager" 
+             x:Name="usercontrol1"                      
+             mc:Ignorable="d"  SnapsToDevicePixels="True"
+             d:DesignHeight="300" d:DesignWidth="300">
+    
+    <UserControl.Resources>
+
+        <Style x:Key="chkStyle" TargetType="CheckBox">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Focusable" Value="False"/>
+        </Style>
+        
+        <DataTemplate x:Key="ListBoxItemTemplate" >
+             <StackPanel Orientation="Horizontal">
+                <CheckBox IsChecked="{Binding IsSelected}" Style="{StaticResource chkStyle}" Content="{Binding Name}"  />                   
+
+                <StackPanel.Triggers>
+                   
+                </StackPanel.Triggers>
+            </StackPanel>
+        </DataTemplate>
+        
+        <Style x:Key="lblStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="10"/>
+             <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="HeadingStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>       
+
+    </UserControl.Resources>
+
+    <Grid>
+        <StackPanel Margin="5" Orientation="Vertical" HorizontalAlignment="Center" >
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="24"/>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Column="0" Grid.Row="0" x:Name="ChklistHeading" Text="{Binding Heading, ElementName=usercontrol1}" Style="{StaticResource HeadingStyle}"/>
+                <ListBox x:Name="myList" Grid.Row="1" Grid.ColumnSpan="2" ItemsSource="{Binding ListItems, ElementName=usercontrol1}" ItemTemplate="{DynamicResource ListBoxItemTemplate}"  MaxHeight="400"  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Vertical"></StackPanel>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListBoxItem}">
+                            <Setter Property="Visibility" Value="{Binding VisibleState}"/>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+                <Button Grid.Column="1" Grid.Row="2" x:Name="btnclear" BorderThickness="0" Command="{Binding ExpandButtonCommand}" Height="30"  Cursor="Hand"
+                    Background="Transparent" Visibility="{Binding ToggleButtonVisibility, ElementName=usercontrol1}" HorizontalContentAlignment="Center" Margin="0,2"  >
+                    <Button.Resources>
+                        <DataTemplate x:Key="MoreTemplate" >
+                            <StackPanel Orientation="Vertical" Height="30" HorizontalAlignment="Center">
+                                <TextBlock x:Name="moretext" Text="{Binding ElementName=btnclear, Path=DataContext.ToggleTextMore}" Style="{StaticResource lblStyle}" HorizontalAlignment="Center"/>
+                                <Path HorizontalAlignment="Center" Fill="Red" Data="M 0 0 L 6 6 L 12 0 Z"/>
+                            </StackPanel>
+                        </DataTemplate>
+
+                        <DataTemplate x:Key="LessTemplate" >
+                            <StackPanel Orientation="Vertical" Height="30" HorizontalAlignment="Center">
+                                <TextBlock x:Name="lesstext" Text="{Binding ElementName=btnclear, Path=DataContext.ToggleTextLess}"  Style="{StaticResource lblStyle}" HorizontalAlignment="Center"/>
+                                <Path HorizontalAlignment="Center" Fill="DeepSkyBlue" Data="M 0 6 L 12 6 L 6 0 Z"/>
+                            </StackPanel>
+                        </DataTemplate>
+
+                        <Style TargetType="{x:Type Button}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=ShowItems, ElementName=usercontrol1}" Value="true">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource LessTemplate}"/>
+                                </DataTrigger>
+
+                                <DataTrigger Binding="{Binding Path=ShowItems, ElementName=usercontrol1}" Value="false">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource MoreTemplate}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </Grid>
+        </StackPanel>
+    </Grid>
+    
+</UserControl>
