@@ -43,7 +43,11 @@
                     </StackPanel>
                     <StackPanel Style="{StaticResource stkpanel}">
                         <TextBlock Text="Designer:" Width="60" Margin="4,10,0,0" FontSize="12" />
-                        <TextBlock Text="Terry Deed" Margin="4,10,0,0" FontSize="12" />
+                        <TextBlock Text="XXXXXX" Margin="4,10,0,0" FontSize="12" />
+                    </StackPanel>
+                        <StackPanel Style="{StaticResource stkpanel}">
+                        <TextBlock Text="License:" Width="60" Margin="4,10,0,0" FontSize="12" />
+                        <TextBlock Text="GNU version 3" Margin="4,10,0,0" FontSize="12" />
                     </StackPanel>
                     <StackPanel Style="{StaticResource stkpanel}">
                         <TextBlock Text="Built:" Width="60" Margin="4,10,0,0" FontSize="12" />
