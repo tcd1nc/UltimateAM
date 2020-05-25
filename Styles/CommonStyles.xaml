@@ -1,0 +1,254 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:ctrls="clr-namespace:AssetManager.UserControls" 
+                     xmlns:local="clr-namespace:AssetManager.Converters"                    
+                    >
+                     
+    <Style x:Key="textlabel" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="Arial"/>
+        <Setter Property="FontWeight" Value="Normal"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="TextAlignment" Value="Right"/>
+        <Setter Property="Margin" Value="2,2,2,2"/>
+    </Style>
+
+    <Style x:Key="dgtextlabel" TargetType="TextBlock" BasedOn="{StaticResource textlabel}">
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="Margin" Value="2,0,0,0"/>
+    </Style>
+
+    <Style x:Key="textbox" TargetType="TextBox">
+        <Setter Property="FontFamily" Value="Arial"/>
+        <Setter Property="FontWeight" Value="Normal"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="Margin" Value="2,2,2,2"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="BorderBrush" Value="Blue"/>
+        <Setter Property="AllowDrop" Value="False"/>
+    </Style>
+
+    <Style x:Key="lstbox" TargetType="ListBox">
+        <Setter Property="FontFamily" Value="Arial"/>
+        <Setter Property="FontWeight" Value="Normal"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="Margin" Value="2,2,2,2"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalContentAlignment" Value="Top"/>
+        <Setter Property="BorderBrush" Value="Blue"/>
+        <Setter Property="AllowDrop" Value="False"/>
+    </Style>
+
+
+    <Style x:Key="combo" TargetType="ComboBox">
+        <Setter Property="FontFamily" Value="Arial"/>
+        <Setter Property="FontWeight" Value="Normal"/>
+        <Setter Property="FontSize" Value="12"/> 
+        <Setter Property="Margin" Value="2,2,2,2"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+
+    <Style x:Key="smallcombo" TargetType="ComboBox" BasedOn="{StaticResource combo}">
+        <Setter Property="Width" Value="90"/>
+        <Setter Property="IsEnabled" Value="{Binding IsEnabled}"/>
+    </Style>
+
+    <Style x:Key="chkbox" TargetType="CheckBox">
+        <Setter Property="FontFamily" Value="Arial"/>
+        <Setter Property="FontWeight" Value="Normal"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Foreground" Value="Black"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="Margin" Value="2,2,2,0"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+            
+    <Style x:Key="stkpanel" TargetType="StackPanel">
+        <Setter Property="Orientation" Value="Horizontal"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>       
+        <Setter Property="Margin" Value="0,2,0,0"/>        
+    </Style>
+
+    <Style x:Key="grpbox" TargetType="GroupBox">
+        <Setter Property="FontFamily" Value="Arial"/>
+        <Setter Property="FontWeight" Value="Normal"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Foreground" Value="Blue"/>
+    </Style>
+   
+    <Style x:Key="monthpicker" TargetType="ctrls:MonthUpDown">
+        <Setter Property="FontFamily" Value="Arial"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontWeight" Value="Normal"/>
+        <Setter Property="Margin" Value="2,2,2,2" />
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="AllowDrop" Value="False"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="AllowDrop" Value="False"/>
+        <Setter Property="Margin" Value="2,2,2,2"/>
+        <Setter Property="Step" Value="1"/>
+        <Setter Property="Format" Value="MMM-yyyy"/>
+        <Setter Property="Height" Value="24"/>
+        <Setter Property="Width" Value="90"/>
+    </Style>
+
+    <Style x:Key="datepicker" TargetType="DatePicker">
+        <Setter Property="AllowDrop" Value="False"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="Margin" Value="2,2,2,2"/>
+    </Style>
+
+
+
+    <Style x:Key="ColumnHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="TextBlock.TextWrapping" Value="Wrap"/>
+        <Setter Property="Padding" Value="4,0,4,0"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Height" Value="30"/>
+        <Setter Property="BorderThickness" Value="0,0,1,1"/>
+        <Setter Property="BorderBrush" Value="LightGray"/>
+        <Setter Property="IsTabStop" Value="False"/>
+        <Setter Property="Background">
+            <Setter.Value>
+                <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                    <GradientStop Offset="0" Color="#F5F5F5" />
+                    <GradientStop Offset="1" Color="#DCDCDC" />
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
+
+    </Style>
+
+
+
+    <Style x:Key="TreeViewItemFocusVisual">
+        <Setter Property="Control.Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <ContentPresenter/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="lblStyle" TargetType="Label">
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Height" Value="24"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="MinWidth" Value="50"/>
+        <Setter Property="Margin" Value="4,0,2,0"/>
+    </Style>
+
+    <Style x:Key="cboStyle" TargetType="ComboBox">
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="Background" Value="AliceBlue" />
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+    </Style>
+
+    <!-- Toggle Button for Treeview -->
+    <Style x:Key="ExpandCollapseToggleStyle" TargetType="ToggleButton">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Grid Width="20" Height="20" SnapsToDevicePixels="True">
+                        <Border x:Name="More" Width="20" Height="20" Background="White">
+                            <Path HorizontalAlignment="Center" VerticalAlignment="Center" Fill="Red" Data="M 8 3 L 8 17 L 17 10 Z"/>
+                        </Border>
+                        <Border x:Name="Less" Width="20" Height="20" Background="White">
+                            <Path HorizontalAlignment="Center" VerticalAlignment="Center" Fill="DeepSkyBlue" Data="M 4 15 L 15 4 L 15 15 Z"/>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter Property="Visibility"  TargetName="More" Value="Collapsed"/>
+                        </Trigger>
+
+                        <Trigger Property="IsChecked" Value="False">
+                            <Setter Property="Visibility"  TargetName="Less" Value="Collapsed"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="dgstyle" TargetType="DataGrid">
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="Margin" Value="0,6,0,0"/>
+        <Setter Property="BorderBrush" Value="Blue"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="AutoGenerateColumns" Value="False"/>
+        <Setter Property="AllowDrop" Value="False"/>
+        <Setter Property="EnableColumnVirtualization" Value="True"/>
+        <Setter Property="EnableRowVirtualization" Value="True"/>
+        <Setter Property="CanUserAddRows" Value="False"/>
+        <Setter Property="CanUserResizeRows" Value="False"/>
+        <Setter Property="CanUserDeleteRows" Value="False"/>
+        <Setter Property="GridLinesVisibility" Value="All"/>
+        <Setter Property="BorderBrush" Value="Gainsboro"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CanUserReorderColumns" Value="False"/>
+        <Setter Property="CanUserSortColumns" Value="False"/>
+        <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="SelectionMode" Value="Single"/>
+        <Setter Property="SelectionUnit" Value="Cell"/>
+    </Style>
+
+
+    <local:StringToDateConverter x:Key="StrToDtConv" />
+    <local:StringToIntegerConverter x:Key="StrToIntConv"/>
+    <local:StringToDecimalConverter x:Key="StrToDecConv"/>
+
+    <ControlTemplate x:Key="StringTemplate">
+        <StackPanel Orientation="Horizontal" Margin="2,2,2,2" ToolTip="{Binding ToolTip}">
+            <TextBlock Style="{StaticResource textlabel}" Text="{Binding DisplayName}" Width="100"/>
+            <TextBox Style="{StaticResource textbox}" Padding="2,0,2,0" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
+        </StackPanel>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="DateTemplate">
+        <StackPanel Orientation="Horizontal" Margin="2,2,2,2" ToolTip="{Binding ToolTip}">
+            <TextBlock Style="{StaticResource textlabel}" Text="{Binding DisplayName}" Width="100" />
+            <ctrls:MonthUpDown Width="100" Margin="2,0,2,0" Style="{StaticResource monthpicker}"
+                 Value="{Binding Value, Converter={StaticResource StrToDtConv}, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" />
+        </StackPanel>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="IntTemplate">
+        <StackPanel Orientation="Horizontal" Margin="2,2,2,2" ToolTip="{Binding ToolTip}">
+            <TextBlock Style="{StaticResource textlabel}" Text="{Binding DisplayName}" Width="100" />
+            <ctrls:IntegerUpDown Value="{Binding Value, Converter={StaticResource StrToIntConv}, FallbackValue=0}"/>
+        </StackPanel>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="DecTemplate">
+        <StackPanel Orientation="Horizontal" Margin="2,2,2,2" ToolTip="{Binding ToolTip}">
+            <TextBlock Style="{StaticResource textlabel}" Text="{Binding DisplayName}" Width="100" />
+            <ctrls:DecimalUpDown Value="{Binding Value, Converter={StaticResource StrToDecConv}, FallbackValue=0}" />
+        </StackPanel>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="BoolTemplate">
+        <StackPanel Orientation="Horizontal" Margin="2,2,2,2" ToolTip="{Binding ToolTip}">
+            <CheckBox Content="{Binding DisplayName}" IsChecked="{Binding Value, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" Style="{StaticResource chkbox}" Width="150"/>
+        </StackPanel>
+    </ControlTemplate>
+
+
+</ResourceDictionary>
